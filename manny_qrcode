@@ -1,0 +1,8 @@
+==================
+User manny is using TOTP (Google Authenticator) with the
+shared secret of  AAAAAAAAAAAAAAAAAAAAAAAAAA
+
+Enter that code to setup Google Authenticator, or load this
+URL to get a scannable QRCode image for quicker setup:
+https://www.google.com/chart?chs=300x300&chld=M|0&cht=qr&chl=otpauth://totp/manny%3Fsecret%3DAAAAAAAAAAAAAAAAAAAAAAAAAA%26issuer%3DTesting
+==================

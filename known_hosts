@@ -1,0 +1,5 @@
+# Having the hostkeys in the container signed by this CA key, allows just this single
+# entry to trust all containers. Using this in conjunction with the ssh_config that sets
+# HostKeyAlias, we map the hostname to a matching principal name in the certificate.
+
+@cert-authority *.testing ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMATjBaXitIoK8jmJT8ODnLjFJ8UGx2koxndAl0Ffsap

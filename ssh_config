@@ -1,0 +1,10 @@
+# SSH (Client) configuration
+# Assumes port 2222 is mapped to the container's port 22
+#
+
+UserKnownHostsFile ./known_hosts
+
+Host test
+  Hostname localhost
+  Port 2222
+  HostKeyAlias container.testing

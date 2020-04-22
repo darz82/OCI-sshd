@@ -1,0 +1,17 @@
+# For sshd user authentication via ChallengeResponse method
+# Invokes the base-auth as substack so that the password results
+# (if successful) will still allow processing of the 2FA
+# via pam_google_authenticator.so.
+# nullok allows bypassing of 2FA if the user home directory
+# does not have a .google_authenticator configuration setup
+
+# There does not seem to be a convenient way to configure userauth
+# with (publickey+Authenticator) without including the password step,
+# as PAM enforces the whole stack. Customizing a stack to pull this off
+# runs the risk of bypassing password check altogether, and may
+# accidentally result in a config that permits token-only to succeed.
+
+account	include	base-account
+
+auth	substack	base-auth
+auth	required	pam_google_authenticator.so nullok [authtok_prompt=Enter code from TOTP: ]
