@@ -21,5 +21,6 @@ RUN chown manny. /home/manny/.google_authenticator && chmod 400 /home/manny/.goo
 COPY manny_qrcode /etc/ssh/manny_qrcode
 
 EXPOSE 22
+ENTRYPOINT ["/usr/sbin/sshd"]
 # Send logs (debug) to stderr, so docker logs can fetch them
-ENTRYPOINT ["/usr/sbin/sshd", "-D", "-e"]
+CMD ["-D", "-d", "-e"]
