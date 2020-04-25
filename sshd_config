@@ -20,15 +20,15 @@ HostCertificate /etc/ssh/id_ed25519-cert.pub
 # for use (without it, like the ecdsa key, logs will show that it is loaded, but never used)
 HostKeyAlgorithms ssh-ed25519,ssh-rsa,ecdsa-sha2-nistp384,ssh-ed25519-cert-v01@openssh.com
 
-# Negotiation paramters
+# Negotiation parameters
+# See sshd_config man page for details - The options listed here are an abbreviated and reordered list
+# to be different from the normal default settings. Used during protocol negotiation, client and server
+# exchange their own lists for these parameters, in priority order. Each list MUST have at least one
+# entry in common, and the server side is obligated to choose the first option appearing on the client's
+# list that appears in the server list.
 Ciphers aes256-gcm@openssh.com,aes256-ctr,aes256-cbc,chacha20-poly1305@openssh.com,aes192-ctr,aes192-cbc,aes128-ctr,aes128-cbc,aes256-gcm@openssh.com,aes128-gcm@openssh.com,3des-cbc
 KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group14-sha256
-
-#Ciphers aes256-gcm@openssh.com,chacha20-poly1305@openssh.com,aes256-ctr,aes256-cbc,aes128-gcm@openssh.com,aes128-ctr,aes128-cbc
-MACs hmac-sha2-256-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha1,umac-128@openssh.com,hmac-sha2-512
-#KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha1,diffie-hellman-group14-sha1,diffie-hellman-group1-sha1
-PubkeyAcceptedKeyTypes rsa-sha2-256,rsa-sha2-256-cert-v01@openssh.com,ecdsa-sha2-nistp256,ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384,ecdsa-sha2-nistp384-cert-v01@openssh.com,rsa-sha2-512,rsa-sha2-512-cert-v01@openssh.com,ecdsa-sha2-nistp521,ecdsa-sha2-nistp521-cert-v01@openssh.com,ssh-ed25519,ssh-ed25519-cert-v01@openssh.com,ssh-rsa,ssh-rsa-cert-v01@openssh.com
-CASignatureAlgorithms rsa-sha2-256,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,rsa-sha2-512,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
+MACs hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha2-512,umac-128@openssh.com,hmac-sha2-256
 
 # Logging
 SyslogFacility AUTHPRIV
@@ -38,25 +38,38 @@ VersionAddendum (Container SSH)
 # Authentication:
 AllowUsers root manny moe jack paul
 PermitRootLogin prohibit-password
-PubkeyAuthentication yes
-AuthorizedKeysFile	.ssh/authorized_keys
+# Server will save information about successful authentications to a file
+# logged in session can locate the file with path specified by $SSH_USER_AUTH
 ExposeAuthInfo yes
-HostbasedAuthentication yes
+
+# Certificate based authentication - server will trust certificates signed
+# with any CA key listed in /etc/ssh/trusted_CAs. Certificate must be valid
+# for the user/principal, not be expired, etc., AND if valid, then the client
+# must successfully prove that it is in possession of the corresponding
+# private key (of the signed key, not the CA private key).
 TrustedUserCAKeys /etc/ssh/trusted_CAs
+CASignatureAlgorithms rsa-sha2-512,ecdsa-sha2-nistp521,ssh-ed25519
+
+# Normal public key authentication - although the container does not populate
+# ~/.ssh/authorized_keys with any public keys, these may be added by the user
+# manually, or via ssh-copy-id. Server may limit the accepted key/cert types,
+# or change the location of the authorized_keys file from the default of ~/.ssh
+PubkeyAuthentication yes
+PubkeyAcceptedKeyTypes rsa-sha2-256,rsa-sha2-256-cert-v01@openssh.com,rsa-sha2-512,rsa-sha2-512-cert-v01@openssh.com,ecdsa-sha2-nistp521,ecdsa-sha2-nistp521-cert-v01@openssh.com,ssh-ed25519,ssh-ed25519-cert-v01@openssh.com,ssh-rsa,ssh-rsa-cert-v01@openssh.com
+AuthorizedKeysFile	.ssh/authorized_keys
+
+# Enable HostbasedAuthentication here, although more configuration on the server
+# and client side is needed to get this properly functioning. For a detailed guide
+# on how to properly setup the additional configurations, see:
+# https://www.usenix.org/system/files/login/articles/09_singer.pdf and
+# https://en.wikibooks.org/wiki/OpenSSH/Cookbook/Host-based_Authentication
+HostbasedAuthentication yes
 
 LoginGraceTime 2m
 MaxAuthTries 10
 MaxSessions 10
 
-# For this to work you will also need host keys in /etc/ssh/ssh_known_hosts
-#HostbasedAuthentication no
-# Change to yes if you don't trust ~/.ssh/known_hosts for
-# HostbasedAuthentication
-#IgnoreUserKnownHosts no
-
-
 # PAM handles keyboard-interactive as ChallengeResponse, so set PasswordAuthentication=no
-# 
 UsePAM yes
 ChallengeResponseAuthentication yes
 PasswordAuthentication no
@@ -79,4 +92,6 @@ AcceptEnv XMODIFIERS
 Subsystem	sftp	/usr/libexec/openssh/sftp-server
 
 Match User manny
+    # Force manny to only be able to use 2FA, and issue the banner file with 2FA info
     Banner /etc/ssh/manny_qrcode
+    AuthenticationMethods keyboard-interactive
