@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Run one or more instances of sshd container with different port assignments to each
+
+IMAGE_NAME="${SSHD_IMAGE_NAME:-sshd}"
+SSHD_OPTIONS=""
+
+if [ "$(which podman)" ]; then
+	DOCKER=podman
+else
+	DOCKER=docker
+fi
+
+# Command line is interpreted as
+# - a list of ports
+# - a single port number (if >= 1024)
+# - a count of instances (if < 1024, then port assignments begin at 2222)
+# - if omitted (length zero), one instance on port 2222
+
+ARGS=($@)
+if [ ${#ARGS[@]} -gt 1 ]; then
+	PORTS=${ARGS[@]}
+elif [ ${#ARGS[@]} -eq 0 ]; then
+	PORTS=(2222)
+elif [ ${ARGS[0]} -ge 1024 ]; then
+	PORTS=(${ARGS[0]})
+else
+	PORTS=($(bash -c "echo {2222..$((2221+${ARGS[0]}))}"))
+fi
+
+echo Running ${IMAGE_NAME} on ports: ${PORTS[@]}
+
+for PORT in ${PORTS[@]} ; do
+	$DOCKER run --rm  -d -p ${PORT}:22 --name sshd_${PORT} --hostname sshd_${PORT} "${IMAGE_NAME}" $SSHD_OPTIONS
+done
+

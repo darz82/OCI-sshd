@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Test single instance of sshd container with full debug output to console
+
+IMAGE_NAME="${1:-sshd}"
+PORT=2222
+SSHD_OPTIONS="-D -e -dddd"
+
+if [ "$(which podman)" ]; then
+	DOCKER=podman
+else
+	DOCKER=docker
+fi
+
+echo "Running single instance of ${IMAGE_NAME}"
+$DOCKER run --rm  -p ${PORT}:22 --name testsshd "${IMAGE_NAME}" $SSHD_OPTIONS
+
