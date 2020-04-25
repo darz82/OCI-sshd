@@ -17,3 +17,5 @@ Host test
   Hostname localhost
   Port 2222
   HostKeyAlias container.testing
+  IdentityFile none
+  IdentitiesOnly yes

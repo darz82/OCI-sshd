@@ -1,3 +1,5 @@
+# Client-side known_hosts file
+#
 # Having the hostkeys in the container signed by this CA key, allows just this single
 # entry to trust all containers. Using this in conjunction with the ssh_config that sets
 # HostKeyAlias, we map the hostname to a matching principal name in the certificate.

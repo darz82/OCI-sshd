@@ -6,3 +6,11 @@ AAAAAAAAAAAAAAAAAAAAAAAAAA
 11111111
 10101010
 
+# Comments at top of file break functionality -  seem ok at bottom
+# Sample .google_authenticator config file for a user
+# This file in $HOME/ along with a properly configured PAM and pam-google-authenticator
+# module will enforce Two-Factor Authentication (2FA), where the user must successfully
+# enter their password AND their time-based token to login.
+# Seed value of zero (AAAAAAAAAAAAAAAAAAAAAAAA) instead of a randomized setting,
+# and a trio of scratch one-time codes that can be used. Scratch codes will be
+# accepted, but removed on use. Starting a new container will restore the original list.
