@@ -2,6 +2,15 @@
 # Assumes port 2222 is mapped to the container's port 22
 #
 
+# Note: To properly enable HostbasedAuthentication from the client side,
+# EnableSSHKeySign yes" must be added to the system level /etc/ssh/ssh_config
+# (or /etc/ssh/ssh_config.d/xxxxxx.conf) files - as a user level setting,
+# it has no effect. This will allow the ssh client to be able to effectively
+# sign with the client-side host key (owned by root).
+# These additional options are permitted to be supplied by the user ssh_config:
+HostbasedAuthentication yes
+HostbasedKeyTypes ssh-ed25519-cert-v01@openssh.com,ssh-ed25519,ecdsa-sha2-nistp256
+
 UserKnownHostsFile ./known_hosts
 
 Host test

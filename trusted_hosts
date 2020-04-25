@@ -1,0 +1,5 @@
+# Copy public hostkeys here to allow HostbasedAuthentication into the container
+# each hostkey must be prefixed with the hostname and/or IP address to identify
+# to the server that the key is trusted from that particular host. Each client 
+# host must be granted explicit trust for its own host key.
+localhost,127.0.0.1 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAvCPsLBct5Q74uimvD/o5i9y/nHn9c9BauUHzAhSCGc 

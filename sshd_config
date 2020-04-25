@@ -36,7 +36,7 @@ LogLevel DEBUG
 VersionAddendum (Container SSH)
 
 # Authentication:
-AllowUsers root manny moe jack
+AllowUsers root manny moe jack paul
 PermitRootLogin prohibit-password
 PubkeyAuthentication yes
 AuthorizedKeysFile	.ssh/authorized_keys
