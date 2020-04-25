@@ -29,6 +29,9 @@ RUN printf "pepboy1\npepboy1\n" | adduser manny ; \
     printf "pepboy3\npepboy3\n" | adduser jack; \
     printf "notapepboy\nnotapepboy\n" | adduser paul
 
+# Configure user paul to trust an additional CA
+RUN mkdir /home/paul/.ssh && echo 'cert-authority,principals="paul" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEqQyVtIit8/cEgcQBjw6PLbN+8XpBwSG4ulb4drO14f' > /home/paul/.ssh/authorized_keys && chown -R paul. /home/paul/.ssh
+
 # Setup user manny with GoogleAuthenticator configuration in place
 COPY google_auth /home/manny/.google_authenticator
 RUN chown manny. /home/manny/.google_authenticator && chmod 400 /home/manny/.google_authenticator
