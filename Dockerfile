@@ -6,6 +6,7 @@ RUN apk add openssh-server openssh-server-pam google-authenticator
 # sshd server config and host keys
 COPY sshd_config /etc/ssh/sshd_config
 COPY keys/host/* /etc/ssh/
+RUN chmod 600 /etc/ssh/id_ecdsa /etc/ssh/id_ed25519 /etc/ssh/id_rsa
 # sshd_config refers to this file of trusted CA public keys
 COPY keys/signing/id_ed25519.pub /etc/ssh/trusted_CAs
 
